@@ -11,6 +11,8 @@ let selectedId;
 $(window).on('load',function () {
     $("#btnCusUpdate").prop("disabled", true);
     $("#btnCusDelete").prop("disabled", true);
+    loadDataTable();
+    setDataTableToTextFeild();
 });
 
 function getAllCustomerForTextField() {
@@ -154,12 +156,69 @@ $("#btnCusDelete").click(function () {
 
 $('#btnCusUpdate').click(function () {
 
-    if (checkAll()){
-        updateCustomer();
+    // if (checkAll()) {
+    //     updateCustomer();
+    // } else {
+    //     alert('error');
+    // }
+    var cusOB = {
+        cusId:$('#customerId').val(),
+        cusFirstName:$('#cusFirstName').val(),
+        cusLastName:$('#cusLastName').val(),
+        cusAddress:$('#cusAddress').val(),
+        cusSalary:$('#cusSalary').val(),
 
-    } else {
-        alert('error');
     }
+    let data = $('#CustomerFormData').serialize();
+    let id = $('#customerId').val();
+
+    console.log(data)
+    $.ajax({
+        url: "http://localhost:8080/app/customer",
+        method: "PUT",
+        contentType: "application/json",
+        data:JSON.stringify(cusOB),
+        success: function (resp) {
+            if (resp.status === 200) {
+                loadDataTable();
+                clearTextField();
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Customer has been Updated!',
+                    showConfirmButton: false,
+                    timer: 2500
+                })
+                // }else if (resp.status === 500 && resp.data.startsWith("Duplicate entry "+"'"+id+"'")){
+                //     Swal.fire({
+                //         position: 'top-end',
+                //         icon: 'warning',
+                //         title: 'Customer has been Already Exist',
+                //         showConfirmButton: false,
+                //         timer: 2500
+                //     })
+
+
+            } else {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'warning',
+                    title: 'Customer Not saved. Please Try Again',
+                    showConfirmButton: false,
+                    timer: 2500
+                })
+            }
+        },
+        error: function (resp) {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'warning',
+                title: 'Customer Not saved. Please Try Again',
+                showConfirmButton: false,
+                timer: 2500
+            })
+        }
+    });
 });
 $('#btnCusGetAll').click(function () {
 

@@ -12,4 +12,5 @@ public interface CustomerBO extends SuperBO{
 //    BasicDataSource pool (HttpServletRequest req);
     public boolean addCustomers(CustomerDTO dto, Connection connection) throws SQLException;
     public ArrayList<CustomerDTO> getAllCustomers(Connection connection) throws SQLException;
+    public boolean updateCustomer(CustomerDTO dto,Connection connection) throws SQLException;
 }

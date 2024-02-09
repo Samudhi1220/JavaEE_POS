@@ -1,8 +1,6 @@
 package lk.ijse.BackEnd.servlet;
 
-import jakarta.json.Json;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonObjectBuilder;
+import jakarta.json.*;
 import lk.ijse.BackEnd.servlet.bo.BOFactory;
 import lk.ijse.BackEnd.servlet.bo.CustomerBO;
 import lk.ijse.BackEnd.servlet.dto.CustomerDTO;
@@ -74,9 +72,32 @@ public class CustomerServlet extends HttpServlet {
         }
 
     }
-
-    @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPut(req, resp);
+        System.out.println("PUT");
+        JsonReader reader = Json.createReader(req.getReader());
+        JsonObject jsonObject = reader.readObject();
+        String cusId = jsonObject.getString("cusId");
+        String cusFirstName = jsonObject.getString("cusFirstName");
+        String cusLastName = jsonObject.getString("cusLastName");
+        String cusAddress = jsonObject.getString("cusAddress");
+        String cusSalary = jsonObject.getString("cusSalary");
+
+//        resp.addHeader("Access-Control-Allow-Origin", "*");
+        resp.setContentType("applicatiodn/json");
+        System.out.println(cusId + cusFirstName + cusLastName + cusAddress + cusSalary );
+        try (Connection connection = ConnectionPoolUtil.pool(req).getConnection();) {
+
+            boolean isUpdated = customerBO.updateCustomer(new CustomerDTO(cusId, cusFirstName, cusLastName, cusAddress, cusSalary), connection);
+            if (isUpdated) {
+                System.out.println(isUpdated);
+                ResponseUtil.genJson("Success", 200, resp);
+            } else {
+                System.out.println(isUpdated);
+                ResponseUtil.genJson("Error", 500, resp);
+            }
+
+        } catch (SQLException e) {
+            ResponseUtil.genJson("Error", 500, e, resp);
+        }
     }
 }
