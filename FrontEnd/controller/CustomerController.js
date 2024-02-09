@@ -90,7 +90,7 @@ function loadDataTable() {
             console.log(resp)
             for (var customer of resp) {
                 console.log(customer)
-                var row = `<tr><td>${customer.id}</td><td>${customer.firstName}</td><td>${customer.lastName}</td><td>${customer.address}</td><td>${customer.salary}</td></tr>`;
+                var row = `<tr><td>${customer.cusId}</td><td>${customer.cusFirstName}</td><td>${customer.cusLastName}</td><td>${customer.cusAddress}</td><td>${customer.cusSalary}</td></tr>`;
                 $('#tblCustomer').append(row)
                 setDataTableToTextFeild();
                 doubleClick();
