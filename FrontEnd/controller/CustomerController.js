@@ -21,15 +21,127 @@ function getAllCustomerForTextField() {
      customerSalary = $('#cusSalary').val();
 }
 $('#btnCusSave').click(function () {
-    if (checkAll()){
-        saveCustomer();
+    // if (checkAll()){
+    //     saveCustomer();
+    //
+    // }else {
+    //     alert('error');
+    // }
 
-    }else {
-        alert('error');
-    }
+    let data = $('#CustomerFormData').serialize();
+    let id = $('#customerId').val();
+
+    console.log(id)
+    console.log("Method Run")
+    $.ajax({
+        url:"http://localhost:8080/app/customer",
+        method:"POST",
+        data:data,
+        success: function (resp) {
+            if (resp.status === 200) {
+           loadDataTable();
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Customer has been saved',
+                    showConfirmButton: false,
+                    timer: 2500
+                })
+            }else if (resp.status === 500 && resp.data.startsWith("Duplicate entry "+"'"+id+"'")){
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'warning',
+                    title: 'Customer has been Already Exist',
+                    showConfirmButton: false,
+                    timer: 2500
+                })
+
+
+            }else {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'warning',
+                    title: 'Customer Not saved. Please Try Again',
+                    showConfirmButton: false,
+                    timer: 2500
+                })
+            }
+        },
+        error:function (resp) {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'warning',
+                title: 'Customer Not saved. Please Try Again',
+                showConfirmButton: false,
+                timer: 2500
+            })
+        }
+
+    })
 });
 
+function loadDataTable() {
+    $('#tblCustomer').empty();
+    $.ajax({
+        url: "http://localhost:8080/app/customer",
+        method: "GET",
+        dataType:"json",
+        success: function (resp) {
+            console.log(resp)
+            for (var customer of resp) {
+                console.log(customer)
+                var row = `<tr><td>${customer.id}</td><td>${customer.firstName}</td><td>${customer.lastName}</td><td>${customer.address}</td><td>${customer.salary}</td></tr>`;
+                $('#tblCustomer').append(row)
+                setDataTableToTextFeild();
+                doubleClick();
+            }
+        }
+    })
+}
+function setDataTableToTextFeild() {
+    $('#tBody > tr').click(function () {
+        let id = $(this).children(':eq(0)').text();
+        let fName = $(this).children(':eq(1)').text();
+        let lName = $(this).children(':eq(2)').text();
+        let address = $(this).children(':eq(3)').text();
+        let salary = $(this).children(':eq(4)').text();
 
+
+
+
+        setDataTextFeild(id, fName, lName, address, salary);
+        $('#customerId').prop('disabled', true);
+        selectedId = $('#customerId').val();
+        // setId(id);
+        setBtn();
+        $('#search').val("");
+    });
+}
+function setDataTextFeild(id, fName, lName, address, salary) {
+    $('#customerId').val(id);
+    $('#cusFirstName').val(fName);
+    $('#cusLastName').val(lName);
+    $('#cusAddress').val(address);
+    $('#cusSalary').val(salary);
+
+}
+
+function doubleClick() {
+    $('#tblCustomer > tr').on('dblclick', function () {
+        disableTextFeild(true);
+        $("#btnCusDelete").prop("disabled", false);
+        $("#btnCusSave").prop("disabled", true);
+        $("#btnCusUpdate").prop("disabled", true);
+    });
+}
+function disableTextFeild(condition) {
+    $('#customerId').prop('disabled', condition);
+    $('#cusFirstName').prop('disabled', condition);
+    $('#cusLastName').prop('disabled', condition);
+    $('#cusAddress').prop('disabled', condition);
+    $('#cusSalary').prop('disabled', condition);
+
+}
 $("#btnCusDelete").click(function () {
     if (checkAll()){
         deleteCustomer();
@@ -50,10 +162,12 @@ $('#btnCusUpdate').click(function () {
     }
 });
 $('#btnCusGetAll').click(function () {
-    getAllCustomers();
-    setDataTextField();
-    focusClick();
-    $('#search').val("");
+
+        loadDataTable();
+        setDataTableToTextFeild();
+        doubleClick();
+        $('#search').val("");
+
 
 });
 
@@ -65,49 +179,7 @@ $('#btnClearCusTable').click(function () {
 
 });
 
-function saveCustomer() {
 
-
-        let customerIds = $('#customerId').val();
-
-        if (searchExistCustomer(customerIds.trim())) {
-            // Swal.fire({
-            //     icon: 'error',
-            //     title: 'Oops...',
-            //     text: 'This Customer Already Exist.'
-            // });
-
-            alert('already exist')
-        }else {
-            getAllCustomerForTextField();
-            let newCustomer = Object.assign({},customer);
-
-            newCustomer.id = customerId;
-            newCustomer.firstName = customerFName;
-            newCustomer.lastName = customerLName;
-            newCustomer.address = customerAddress;
-            newCustomer.salary = customerSalary;
-
-            customerDB.push(newCustomer);
-
-            Swal.fire({
-                position: 'top-end',
-                icon: 'success',
-                title: 'Customer has been saved',
-                showConfirmButton: false,
-                timer: 1500
-
-            })
-
-            loadAllData();
-            clearTextField();
-        bindEvents();
-            focusClick();
-            $('#search').val("");
-
-        }
-
-}
 
 function updateCustomer() {
     getAllCustomerForTextField();
@@ -158,39 +230,7 @@ function updateCustomer() {
 
 function deleteCustomer() {
 
-    Swal.fire({
-        title: 'Do you want to delete?',
-        showDenyButton: true,
-        showCancelButton: true,
-        confirmButtonText: 'Delete',
-        denyButtonText: `Don't delete`,
-    }).then((result) => {
-        /* Read more about isConfirmed, isDenied below */
-        if (result.isConfirmed) {
 
-            let index = -1;
-
-            for (let customerObj of customerDB) {
-                if (customerObj.id == selectedId) {
-                    customerDB.splice(selectedId, 1);
-                }
-            }
-
-
-            loadAllData();
-            clearTextField();
-            bindEvents()
-            focusClick();
-            $('#search').val("");
-
-
-            Swal.fire('Deleted!', '', 'success');
-
-
-        } else if (result.isDenied) {
-            Swal.fire('Not Delete', '', 'info')
-        }
-    });
 }
 
 function searchExistCustomer(id) {
@@ -199,13 +239,7 @@ function searchExistCustomer(id) {
     });
 }
 
-function loadAllData() {
-    $('#tblCustomer').empty();
-    for (var customer of customerDB){
-        var row = `<tr><td>${customer.id}</td><td>${customer.firstName}</td><td>${customer.lastName}</td><td>${customer.address}</td><td>${customer.salary}</td></tr>`;
-        $('#tblCustomer').append(row)
-    }
-}
+
 
 function setDataTextField(id,firstName,lastName,address,salary) {
     $('#customerId').val(id);
@@ -253,14 +287,7 @@ function bindEvents() {
     })
 }
 
-function disableTextField(condition) {
-    $('#customerId').prop('disabled', condition);
-    $('#cusFirstName').prop('disabled', condition);
-    $('#cusLastName').prop('disabled', condition);
-    $('#cusAddress').prop('disabled', condition);
-    $('#cusSalary').prop('disabled', condition);
 
-}
 
 function focusClick() {
     $('#tblCustomer > tr').on('click', function () {

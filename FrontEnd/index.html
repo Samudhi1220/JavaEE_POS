@@ -108,16 +108,17 @@
             </a>Customer
             </div>
             <div class="card-body  bg-dark-subtle">
+
                 <div class="container text-center">
                     <div class="row">
                         <div class="col-sm-8">
-                            <form class="row g-3 needs-validation bg-inf" novalidate style="max-width: 50rem;">
+                            <form class="row g-3 needs-validation bg-inf" novalidate style="max-width: 50rem;" id="CustomerFormData">
                                 <span class="border border-start-0"></span>
 
                                 <div class="col-md-4">
                                     <label for="customerId" class="form-label">Customer Id</label>
                                     <div class="input-group has-validation">
-                                        <input type="text" class="form-control" id="customerId"
+                                        <input type="text" class="form-control"  name="cusId" id="customerId"
                                                aria-describedby="inputGroupPrepend" required>
                                         <div class="invalid-feedback">
                                             Please choose a Id.
@@ -126,7 +127,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label for="cusFirstName" class="form-label">First name</label>
-                                    <input type="text" class="form-control" id="cusFirstName"
+                                    <input type="text" class="form-control" id="cusFirstName" name="cusFirstName"
                                            required>
                                     <div class="valid-feedback">
                                         Looks good!
@@ -134,7 +135,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label for="cusLastName" class="form-label">Last name</label>
-                                    <input type="text" class="form-control" id="cusLastName"
+                                    <input type="text" class="form-control" id="cusLastName" name="cusLastName"
                                            required>
                                     <div class="valid-feedback">
                                         Looks good!
@@ -142,14 +143,14 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="cusAddress" class="form-label">Address</label>
-                                    <input type="text" class="form-control" id="cusAddress" required>
+                                    <input type="text" class="form-control" id="cusAddress"  name="cusAddress" required>
                                     <div class="invalid-feedback">
                                         Please provide a valid Address.
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <label for="cusSalary" class="form-label">Salary</label>
-                                    <input type="text" class="form-control" id="cusSalary" required>
+                                    <input type="text" class="form-control" id="cusSalary" name="cusSalary" required>
                                     <div class="invalid-feedback">
                                         Please select a valid state.
                                     </div>
@@ -208,7 +209,7 @@
                                 <span class="border border-start-0"></span>
                                 <div class="col-sm-6">
                                     <label for="itemCode" class="form-label">Item Code</label>
-                                    <input type="text" class="form-control"  required id="itemCode">
+                                    <input type="text"  name="itemId" class="form-control"  required id="itemCode">
                                     <div class="valid-feedback">
                                         Looks good!
                                     </div>
